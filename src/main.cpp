@@ -9,15 +9,14 @@
 
 
 // FUNCTION INITIALIZATION
+
+
+// MAIN
 int main() {
     std::cout << "test" << std::endl;
     
     return 0;
 }
-
-
-// MAIN
-
 
 
 // FUNCTIONS

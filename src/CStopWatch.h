@@ -16,9 +16,9 @@
 #define CStopWatch_H_DEF
 
 #ifdef _WIN32   // Windows system specific
-  #include <windows.h>
+    #include <windows.h>
 #else          // Unix based system specific
-  #include <sys/time.h>
+    #include <sys/time.h>
 #endif
 
 
