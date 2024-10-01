@@ -57,14 +57,15 @@ int main() {
 
 
 // FUNCTIONS
-void producer_consumer(int num_p, int num_c, std::queue<std::string> q) {
+void producer_consumer(int num_p, int num_c, std::queue<std::string>& q) {
     std::string file_line;
     int threadID;
     bool producers_finished = false;
+    std::mutex queue_mutex;
     
     omp_set_num_threads(num_p + num_c);
     
-    #pragma omp parallel private(file_line, threadID) shared(shared_queue, producers_finished)
+    #pragma omp parallel private(file_line, threadID) shared(shared_queue, producers_finished, queue_mutex)
     {
         threadID = omp_get_thread_num();
         
@@ -72,8 +73,8 @@ void producer_consumer(int num_p, int num_c, std::queue<std::string> q) {
             // Producer
             std::string file_name;
             while (!q.empty()) {
-                #pragma omp critical(fetch_file)
                 {
+                    std::lock_guard<std::mutex> lock(queue_mutex);
                     if (!q.empty()) {
                         file_name = q.front();
                         q.pop();
@@ -81,11 +82,13 @@ void producer_consumer(int num_p, int num_c, std::queue<std::string> q) {
                 }
                 if (!file_name.empty()) {
                     std::ifstream file(file_name);
+                    if (!file.is_open()) {
+                        std::cerr << "Failed to open file: " << file_name << std::endl;
+                        continue;
+                    }
                     while (getline(file, file_line)) {
-                        #pragma omp critical(add_to_queue)
-                        {
-                            shared_queue.push(file_line);
-                        }
+                        std::lock_guard<std::mutex> lock(queue_mutex);
+                        shared_queue.push(file_line);
                     }
                     file.close();
                 }
@@ -98,12 +101,12 @@ void producer_consumer(int num_p, int num_c, std::queue<std::string> q) {
         }
         else {
             // Consumer
-            while (!producers_finished || !shared_queue.empty()) {
+            while (true) {
                 std::string temp;
                 bool has_item = false;
                 
-                #pragma omp critical(std_out)
                 {
+                    std::lock_guard<std::mutex> lock(queue_mutex);
                     if (!shared_queue.empty()) {
                         temp = shared_queue.front();
                         shared_queue.pop();
@@ -113,6 +116,10 @@ void producer_consumer(int num_p, int num_c, std::queue<std::string> q) {
                 
                 if (has_item) {
                     std::cout << temp << std::endl;
+                }
+                
+                if (producers_finished && shared_queue.empty()) {
+                    break;
                 }
             }
         }
