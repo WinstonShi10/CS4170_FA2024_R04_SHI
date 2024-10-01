@@ -1,0 +1,2 @@
+makefile:26: *** missing separator.  Stop.
+/var/spool/slurmd/job33624447/slurm_script: line 12: ./OpenMP: No such file or directory
