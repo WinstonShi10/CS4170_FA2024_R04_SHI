@@ -10,6 +10,7 @@
 #include <string>
 #include <fstream>
 #include <mutex>
+#include <atomic>
 
 
 // GLOBAL VARIABLES
