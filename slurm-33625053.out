@@ -1,5 +1,0 @@
-Building target: PSO
-Invoking: GCC C++ Linker
-g++ -o "OpenMP" -fopenmp   ./src/CStopWatch.o  ./src/main.o  
-Finished building target: PSO
- 
