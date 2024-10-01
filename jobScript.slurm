@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --ntasks=2 
+#SBATCH --ntasks=24
 #SBATCH --time=1:00:00
 #SBATCH --mail-type=END,FAIL
 #SBATCH --account=PCS0288
