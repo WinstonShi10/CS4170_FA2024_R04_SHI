@@ -9,6 +9,8 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <mutex>
+#include <atomic>
 
 
 // GLOBAL VARIABLES
@@ -16,7 +18,7 @@ std::queue<std::string> shared_queue;
 
 
 // FUNCTION INITIALIZATION
-void producer_consumer(int num_p, int num_c, std::queue<std::string> q);
+void producer_consumer(int num_p, int num_c, std::queue<std::string>& q);
 
 
 // MAIN
@@ -57,48 +59,71 @@ int main() {
 
 
 // FUNCTIONS
-void producer_consumer(int num_p, int num_c, std::queue<std::string> q) {
-    // initialize string variable, stores file lines
+void producer_consumer(int num_p, int num_c, std::queue<std::string>& q) {
     std::string file_line;
-    // initialize integer vairable, stores thread number
     int threadID;
-    // set number of threads to max-number of threads needed
+    bool producers_finished = false;
+    std::mutex queue_mutex;
+    
     omp_set_num_threads(num_p + num_c);
-    // parallelization
-    # pragma omp parallel private(file_line, threadID) shared(shared_queue)
+    
+    #pragma omp parallel private(file_line, threadID) shared(shared_queue, producers_finished, queue_mutex)
     {
-        // fetch thread id number
         threadID = omp_get_thread_num();
-        // if the thread is a producer
-        if(threadID < num_p) {
+        
+        if (threadID < num_p) {
+            // Producer
             std::string file_name;
-
-            while(!q.empty()) {
-                #pragma omp critical(fetch_file)
+            while (!q.empty()) {
                 {
-                    file_name = q.front();
-                    q.pop();
-
-                }
-                std::ifstream file(file_name);
-                while(getline(file, file_line)) {
-                    #pragma omp critical(add_to_queue)
-                    {
-                        shared_queue.push(file_line);
+                    std::lock_guard<std::mutex> lock(queue_mutex);
+                    if (!q.empty()) {
+                        file_name = q.front();
+                        q.pop();
                     }
                 }
-                file.close();
+                if (!file_name.empty()) {
+                    std::ifstream file(file_name);
+                    if (!file.is_open()) {
+                        std::cerr << "Failed to open file: " << file_name << std::endl;
+                        continue;
+                    }
+                    while (getline(file, file_line)) {
+                        std::lock_guard<std::mutex> lock(queue_mutex);
+                        shared_queue.push(file_line);
+                    }
+                    file.close();
+                }
+            }
+            
+            #pragma omp critical(update_producers_finished)
+            {
+                producers_finished = true;
             }
         }
         else {
-            #pragma omp critical(std_out)
-            {
-                std::string temp = shared_queue.front();
-                shared_queue.pop();
-                std::cout << temp << std::endl;
+            // Consumer
+            while (true) {
+                std::string temp;
+                bool has_item = false;
+                
+                {
+                    std::lock_guard<std::mutex> lock(queue_mutex);
+                    if (!shared_queue.empty()) {
+                        temp = shared_queue.front();
+                        shared_queue.pop();
+                        has_item = true;
+                    }
+                }
+                
+                if (has_item) {
+                    std::cout << temp << std::endl;
+                }
+                
+                if (producers_finished && shared_queue.empty()) {
+                    break;
+                }
             }
         }
     }
-
-    return;
 }
