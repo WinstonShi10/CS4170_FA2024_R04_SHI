@@ -47,7 +47,7 @@ int main() {
             // Stop timer
             timer.stopTimer();
 
-            std::cout << prod_t << ", " << cons_t << ", " << prod_t + cons_t << ", " << timer.getElapsedTime() << std::endl;
+            myFile << prod_t << ", " << cons_t << ", " << prod_t + cons_t << ", " << timer.getElapsedTime() << std::endl;
         }
     }
     myFile.close();
