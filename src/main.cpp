@@ -95,7 +95,7 @@ void producer_consumer(int num_p, int num_c, std::queue<std::string> q) {
             {
                 std::string temp = shared_queue.front();
                 shared_queue.pop();
-                //std::cout << temp << std::endl;
+                std::cout << temp << std::endl;
             }
         }
     }
