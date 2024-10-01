@@ -65,7 +65,7 @@ void producer_consumer(int num_p, int num_c, std::queue<std::string> q) {
     // set number of threads to max-number of threads needed
     omp_set_num_threads(num_p + num_c);
     // parallelization
-    # pragma omp parallel private(file_line, threadID) shared(shared_queue)
+    # pragma omp parallel private(file_line, threadID, q) shared(shared_queue)
     {
         // fetch thread id number
         threadID = omp_get_thread_num();
