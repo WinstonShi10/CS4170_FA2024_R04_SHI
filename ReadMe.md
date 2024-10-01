@@ -13,11 +13,105 @@ Evaluate the exercise using 1-12 threads for the producer, 1-12 threads for cons
 
 ## Run Locally
 
-`docker run --rm -v ${PWD}:/tmp -w /tmp/Default rgreen13/alpine-bash-gpp make all`
+Clone Repository
 
-`docker run --rm -v ${PWD}:/tmp -w /tmp/Default rgreen13/alpine-bash-gpp ./OpenMP`
+```bash
+    git clone git@github.com:WinstonShi10/CS4170_FA2024_R04_SHI.git reflection_04
+```
+
+Change directory
+
+```bash
+    cd reflection_04
+```
+
+Run bash file
+
+```bash
+    sh run.sh
+```
 
 ## Run on OpenMP
+
+Login to the Ohio Super Computer
+
+```bash
+ssh USERNAME@owens.osc.edu
+```
+
+Load the Git module and setup the environment to use a specific version of Git
+
+```bash
+module load git
+```
+
+Remove the value of the SSH_ASKPASS environment variable
+
+```bash
+unset SSH_ASKPASS
+```
+
+Clone repository
+
+```bash
+git clone git@github.com:WinstonShi10/CS4170_FA2024_R04_SHI.git reflection_04
+```
+
+Change directory
+
+```bash
+cd reflection_04
+```
+
+Submit job using SLURM file
+
+```bash
+sbatch jobScript.slurm
+```
+
+Come back to repository after job completion confirmation
+
+<div align="center">
+    <img src="Results/confirmation.jpeg" alt="Image of Confirmation" width="300" align="center">
+<div align="left">
+
+Change directory to Default File
+
+```bash
+cd Default
+```
+
+Open CVS file to see result
+
+```bash
+cat results.csv
+```
+
+## Check Job
+
+job status
+
+```bash
+squeue -j BATCH_ID_NUM
+```
+
+OSC job queue
+
+```bash
+squeue
+```
+
+Show batch job information:
+ * Resource usage statistics
+ * CPU usage
+ * Memory usage
+ * I/O operations
+ * Process creation rate
+
+```bash
+sacct -j BATCH_ID_NUM
+```
+
 ## Speedup
 ## Efficiency
 ## Karp-Flatt Metric
