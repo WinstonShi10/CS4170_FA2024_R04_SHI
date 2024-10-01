@@ -6,7 +6,7 @@
 #SBATCH --account=PCS0253
 #SBATCH --job-name=JOB_NAME
 
-export OMP_NUM_THREADS=12
+export OMP_NUM_THREADS=24
 cd $SLURM_SUBMIT_DIR/Default
 make all
 ./OpenMP > results.csv
