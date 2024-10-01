@@ -37,7 +37,7 @@ int main() {
         producer_files.push(file_name);
     }
     // create cvs file
-    myFile.open("results.cvs");
+    myFile.open("data.csv");
     // Number of producer threads
     for(int prod_t = 1; prod_t < 13; prod_t++) {
         // Number of consumer threads
