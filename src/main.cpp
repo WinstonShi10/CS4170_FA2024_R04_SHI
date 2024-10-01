@@ -18,7 +18,7 @@ std::queue<std::string> shared_queue;
 
 
 // FUNCTION INITIALIZATION
-void producer_consumer(int num_p, int num_c, std::queue<std::string> q);
+void producer_consumer(int num_p, int num_c, std::queue<std::string>& q);
 
 
 // MAIN
