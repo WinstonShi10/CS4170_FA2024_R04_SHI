@@ -91,8 +91,10 @@ void producer_consumer(int num_p, int num_c, std::queue<std::string> q) {
                 }
             }
             
-            #pragma omp atomic
-            producers_finished = true;
+            #pragma omp critical(update_producers_finished)
+            {
+                producers_finished = true;
+            }
         }
         else {
             // Consumer
