@@ -2,7 +2,7 @@
 #PBS -l walltime=1:00:00
 #PBS -m ae
 #PBS -j oe
-#PBS -A PCS0253
+#PBS -A PCS0288
 #PBS -n JOB_NAME
 
 export OMP_NUM_THREADS 24
